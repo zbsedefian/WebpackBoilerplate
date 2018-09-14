@@ -264,32 +264,8 @@ yarn add --dev html-webpack-plugin
     })
 </pre>
 
-And your output of
+And your output of index.js with no script tags will include after the body the following
 
 <pre>
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Upstar Music</title>
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
-</html>
-</pre>
-
-Will be
-
-<pre>
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Upstar Music</title>
-  </head>
-  <body>
-    <div id="root"></div>
   <script type="text/javascript" src="vendor.js"></script><script type="text/javascript" src="bundle.js"></script></body>
-</html>
 </pre>
