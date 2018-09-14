@@ -1,6 +1,50 @@
 /******/ (function(modules) { // webpackBootstrap
+/******/ 	// install a JSONP callback for chunk loading
+/******/ 	function webpackJsonpCallback(data) {
+/******/ 		var chunkIds = data[0];
+/******/ 		var moreModules = data[1];
+/******/
+/******/
+/******/ 		// add "moreModules" to the modules object,
+/******/ 		// then flag all "chunkIds" as loaded and fire callback
+/******/ 		var moduleId, chunkId, i = 0, resolves = [];
+/******/ 		for(;i < chunkIds.length; i++) {
+/******/ 			chunkId = chunkIds[i];
+/******/ 			if(installedChunks[chunkId]) {
+/******/ 				resolves.push(installedChunks[chunkId][0]);
+/******/ 			}
+/******/ 			installedChunks[chunkId] = 0;
+/******/ 		}
+/******/ 		for(moduleId in moreModules) {
+/******/ 			if(Object.prototype.hasOwnProperty.call(moreModules, moduleId)) {
+/******/ 				modules[moduleId] = moreModules[moduleId];
+/******/ 			}
+/******/ 		}
+/******/ 		if(parentJsonpFunction) parentJsonpFunction(data);
+/******/
+/******/ 		while(resolves.length) {
+/******/ 			resolves.shift()();
+/******/ 		}
+/******/
+/******/ 	};
+/******/
+/******/
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
+/******/
+/******/ 	// object to store loaded and loading chunks
+/******/ 	// undefined = chunk not loaded, null = chunk preloaded/prefetched
+/******/ 	// Promise = chunk loading, 0 = chunk loaded
+/******/ 	var installedChunks = {
+/******/ 		"main": 0
+/******/ 	};
+/******/
+/******/
+/******/
+/******/ 	// script path function
+/******/ 	function jsonpScriptSrc(chunkId) {
+/******/ 		return __webpack_require__.p + "" + chunkId + ".bundle.js"
+/******/ 	}
 /******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
@@ -26,6 +70,65 @@
 /******/ 		return module.exports;
 /******/ 	}
 /******/
+/******/ 	// This file contains only the entry chunk.
+/******/ 	// The chunk loading function for additional chunks
+/******/ 	__webpack_require__.e = function requireEnsure(chunkId) {
+/******/ 		var promises = [];
+/******/
+/******/
+/******/ 		// JSONP chunk loading for javascript
+/******/
+/******/ 		var installedChunkData = installedChunks[chunkId];
+/******/ 		if(installedChunkData !== 0) { // 0 means "already installed".
+/******/
+/******/ 			// a Promise means "currently loading".
+/******/ 			if(installedChunkData) {
+/******/ 				promises.push(installedChunkData[2]);
+/******/ 			} else {
+/******/ 				// setup Promise in chunk cache
+/******/ 				var promise = new Promise(function(resolve, reject) {
+/******/ 					installedChunkData = installedChunks[chunkId] = [resolve, reject];
+/******/ 				});
+/******/ 				promises.push(installedChunkData[2] = promise);
+/******/
+/******/ 				// start chunk loading
+/******/ 				var head = document.getElementsByTagName('head')[0];
+/******/ 				var script = document.createElement('script');
+/******/ 				var onScriptComplete;
+/******/
+/******/ 				script.charset = 'utf-8';
+/******/ 				script.timeout = 120;
+/******/ 				if (__webpack_require__.nc) {
+/******/ 					script.setAttribute("nonce", __webpack_require__.nc);
+/******/ 				}
+/******/ 				script.src = jsonpScriptSrc(chunkId);
+/******/
+/******/ 				onScriptComplete = function (event) {
+/******/ 					// avoid mem leaks in IE.
+/******/ 					script.onerror = script.onload = null;
+/******/ 					clearTimeout(timeout);
+/******/ 					var chunk = installedChunks[chunkId];
+/******/ 					if(chunk !== 0) {
+/******/ 						if(chunk) {
+/******/ 							var errorType = event && (event.type === 'load' ? 'missing' : event.type);
+/******/ 							var realSrc = event && event.target && event.target.src;
+/******/ 							var error = new Error('Loading chunk ' + chunkId + ' failed.\n(' + errorType + ': ' + realSrc + ')');
+/******/ 							error.type = errorType;
+/******/ 							error.request = realSrc;
+/******/ 							chunk[1](error);
+/******/ 						}
+/******/ 						installedChunks[chunkId] = undefined;
+/******/ 					}
+/******/ 				};
+/******/ 				var timeout = setTimeout(function(){
+/******/ 					onScriptComplete({ type: 'timeout', target: script });
+/******/ 				}, 120000);
+/******/ 				script.onerror = script.onload = onScriptComplete;
+/******/ 				head.appendChild(script);
+/******/ 			}
+/******/ 		}
+/******/ 		return Promise.all(promises);
+/******/ 	};
 /******/
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
@@ -79,46 +182,22 @@
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "build/";
 /******/
+/******/ 	// on error function for async loading
+/******/ 	__webpack_require__.oe = function(err) { console.error(err); throw err; };
+/******/
+/******/ 	var jsonpArray = window["webpackJsonp"] = window["webpackJsonp"] || [];
+/******/ 	var oldJsonpFunction = jsonpArray.push.bind(jsonpArray);
+/******/ 	jsonpArray.push = webpackJsonpCallback;
+/******/ 	jsonpArray = jsonpArray.slice();
+/******/ 	for(var i = 0; i < jsonpArray.length; i++) webpackJsonpCallback(jsonpArray[i]);
+/******/ 	var parentJsonpFunction = oldJsonpFunction;
+/******/
 /******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = "./src/index.js");
 /******/ })
 /************************************************************************/
 /******/ ({
-
-/***/ "./assets/big1.jpg":
-/*!*************************!*\
-  !*** ./assets/big1.jpg ***!
-  \*************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-eval("module.exports = __webpack_require__.p + \"f3444019bef47d8d450b81ffd5d893c4.jpg\";\n\n//# sourceURL=webpack:///./assets/big1.jpg?");
-
-/***/ }),
-
-/***/ "./assets/small.png":
-/*!**************************!*\
-  !*** ./assets/small.png ***!
-  \**************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-eval("module.exports = \"data:image/png;base64,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\"\n\n//# sourceURL=webpack:///./assets/small.png?");
-
-/***/ }),
-
-/***/ "./src/image_viewer.js":
-/*!*****************************!*\
-  !*** ./src/image_viewer.js ***!
-  \*****************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-eval("\n\nvar _big = __webpack_require__(/*! ../assets/big1.jpg */ \"./assets/big1.jpg\");\n\nvar _big2 = _interopRequireDefault(_big);\n\nvar _small = __webpack_require__(/*! ../assets/small.png */ \"./assets/small.png\");\n\nvar _small2 = _interopRequireDefault(_small);\n\n__webpack_require__(/*! ./styles/image_viewer.css */ \"./src/styles/image_viewer.css\");\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nvar image = document.createElement(\"img\");\nimage.src = _small2.default;\n\ndocument.body.appendChild(image);\n\n// Big\n\nvar bigImage = document.createElement(\"img\");\nbigImage.src = _big2.default;\n\ndocument.body.appendChild(bigImage);\n\n//# sourceURL=webpack:///./src/image_viewer.js?");
-
-/***/ }),
 
 /***/ "./src/index.js":
 /*!**********************!*\
@@ -128,30 +207,7 @@ eval("\n\nvar _big = __webpack_require__(/*! ../assets/big1.jpg */ \"./assets/bi
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\n\nvar _sum = __webpack_require__(/*! ./sum */ \"./src/sum.js\");\n\nvar _sum2 = _interopRequireDefault(_sum);\n\n__webpack_require__(/*! ./image_viewer */ \"./src/image_viewer.js\");\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nvar total = (0, _sum2.default)(10, 5);\nconsole.log(total);\n\n//# sourceURL=webpack:///./src/index.js?");
-
-/***/ }),
-
-/***/ "./src/styles/image_viewer.css":
-/*!*************************************!*\
-  !*** ./src/styles/image_viewer.css ***!
-  \*************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-eval("// removed by extract-text-webpack-plugin\n\n//# sourceURL=webpack:///./src/styles/image_viewer.css?");
-
-/***/ }),
-
-/***/ "./src/sum.js":
-/*!********************!*\
-  !*** ./src/sum.js ***!
-  \********************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\nvar sum = function sum(a, b) {\n  return a + b;\n};\n\nexports.default = sum;\n\n//# sourceURL=webpack:///./src/sum.js?");
+eval("\n\nvar button = document.createElement('button');\nbutton.innerText = 'Click me';\nbutton.onclick = function () {\n    __webpack_require__.e(/*! import() */ 0).then(__webpack_require__.t.bind(null, /*! ./image_viewer */ \"./src/image_viewer.js\", 7)).then(function (module) {\n        module.default();\n    });\n};\n\ndocument.body.appendChild(button);\n\n//# sourceURL=webpack:///./src/index.js?");
 
 /***/ })
 

@@ -2,11 +2,19 @@ const path = require("path");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const config = {
-  entry: "./src/index.js",
+  entry: {
+    index: "./src/index.js",
+    imageModule: "./src/image_viewer.js"
+  },
   output: {
     path: path.resolve(__dirname, "build"),
-    filename: "bundle.js",
+    filename: "[name].bundle.js",
     publicPath: "build/"
+  },
+  optimization: {
+    splitChunks: {
+      chunks: "all"
+    }
   },
   mode: "development",
   module: {
