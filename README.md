@@ -1,4 +1,11 @@
 # INITIAL
+package.json
+
+<pre>
+"scripts": {
+    "build": "webpack"
+  }
+</pre>
 
 <pre>
 yarn add webpack-cli --dev
