@@ -1,3 +1,4 @@
+<pre>
 # INITIAL
 
 yarn add webpack-cli --dev
@@ -100,3 +101,4 @@ in rules:
 }\
 
 url-loader takes import statement of big and assigns it to the public path
+</pre>
