@@ -1,14 +1,15 @@
 # INITIAL
+
+<pre>
+yarn add webpack-cli --dev
+</pre>
+
 package.json
 
 <pre>
 "scripts": {
     "build": "webpack"
   }
-</pre>
-
-<pre>
-yarn add webpack-cli --dev
 </pre>
 
 Make webpack.config.js
@@ -228,4 +229,67 @@ Finally, to avoid importing the same module more than once, add the optimization
       chunks: "all"
     }
   }
+</pre>
+
+# More code splitting: extract modules / libraries
+
+Get imported modules from package.json and create array.
+
+<pre>
+const VENDOR_LIBS = [
+  "faker", "lodash", "react", "react-dom", "react-input-range",
+  "react-redux", "react-router", "redux", "redux-form", "redux-thunk"
+]
+</pre>
+
+Add to entry points.
+
+<pre>
+entry: {
+    bundle: "./src/index.js",
+    vendor: VENDOR_LIBS
+  }
+</pre>
+
+
+Then to dynamically add these script tags do the following.
+
+<pre>
+yarn add --dev html-webpack-plugin
+</pre>
+
+<pre>
+    new HtmlWebpackPlugin({
+      template: 'src/index.html'
+    })
+</pre>
+
+And your output of
+
+<pre>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Upstar Music</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+</pre>
+
+Will be
+
+<pre>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Upstar Music</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  <script type="text/javascript" src="vendor.js"></script><script type="text/javascript" src="bundle.js"></script></body>
+</html>
 </pre>
