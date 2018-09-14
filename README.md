@@ -269,3 +269,35 @@ And your output of index.js with no script tags will include after the body the 
 <pre>
   <script type="text/javascript" src="vendor.js"></script><script type="text/javascript" src="bundle.js"></script></body>
 </pre>
+
+However, the browser will not know if the file has been updated if the filename remains the same. Therefore the filename needs to be made unique with chunkhash.
+
+<pre>
+ output: {
+    path: path.join(__dirname, 'dist'),
+    filename: '[name].[chunkhash].js'
+  },
+</pre>
+
+We also must adjust the chunk plugin with the manifest file to tell if the vendor file has changed. (notice it's names not name.)
+
+<pre>
+ new webpack.optimize.CommonsChunkPlugin({
+      names: ['vendor', 'manifest']
+    }),
+</pre>
+
+Each of these hash-named updated files will remain in the dist directory. Clean it up by installing helper module rimraf (as in rm -rf).
+
+<pre>
+yarn add --dev rimraf
+</pre>
+
+And to package.json 
+
+<pre>
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "npm run clean && webpack"
+  },
+</pre>
