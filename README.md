@@ -41,12 +41,31 @@ const config = {
         rules: [
         {
             use: "babel-loader",
-            test: /\.js$/
+            test: /\.js$/,
+            exclude: /node_modules/
         }
     }
 }
 
 module.exports = config;
+</pre>
+
+Can exclude /node_modules because it's already ES5.
+.babel
+Create a .babelrc file and add
+
+<pre>
+{
+  "presets": ["babel-preset-env"]
+}
+</pre>
+
+Or if react, must transpile JSX to raw JavaScript, so add react preset.
+
+<pre>
+{
+  "presets": ["babel-preset-env", "react"]
+}
 </pre>
 
 # CSS
