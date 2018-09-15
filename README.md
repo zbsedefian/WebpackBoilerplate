@@ -349,7 +349,7 @@ const componentRoutes = {
 
 const Routes = () => {
   return (
-    <Router history={hashHistory} routes={componentRoutes} />
+    &ltRouter history={hashHistory} routes={componentRoutes} /&rt
   );
 };
 </pre>
