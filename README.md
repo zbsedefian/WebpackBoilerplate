@@ -301,3 +301,56 @@ And to package.json
     "build": "npm run clean && webpack"
   },
 </pre>
+
+# Webpack Dev Server
+
+Module that watches for file changes. Browser connects directly to webpack-dev-server. Its purpose is to create a SPA without a backend. Integrating webpack with a node server is a different thing.
+
+Add script to avoid installing globally.
+<pre>
+"server": "webpack-dev-server"
+</pre>
+
+Webpack dev server does not create files on the harddrive. Meaning, it's not for production use. If you delete dist, it still works, because it build its own.
+
+# Code splitting with react-router
+
+Replace Router logic with plain routes instead of JSX. This is what react-router actually does behind the scenes.
+
+<pre>
+const componentRoutes = {
+  component: Home,
+  path: "/",
+  indexRoute: { component: ArtistMain },
+  childRoutes: [
+    {
+      path: "artists/new",
+      getComponent(location, cb) {
+        System.import('./components/artists/ArtistCreate')
+          .then(module => cb(null, module.default))
+      }
+    },
+    {
+      path: "artists/:id",
+      getComponent(location, cb) {
+        System.import('./components/artists/ArtistDetail')
+          .then(module => cb(null, module.default))
+      }
+    },
+    {
+      path: "artists/:id/edit",
+      getComponent(location, cb) {
+        System.import('./components/artists/ArtistEdit')
+          .then(module => cb(null, module.default))
+      }
+    }
+  ]
+}
+
+const Routes = () => {
+  return (
+    <Router history={hashHistory} routes={componentRoutes} />
+  );
+};
+</pre>
+
