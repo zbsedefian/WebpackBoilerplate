@@ -349,8 +349,124 @@ const componentRoutes = {
 
 const Routes = () => {
   return (
-    &ltRouter history={hashHistory} routes={componentRoutes} /&rt
+    &ltRouter history={hashHistory} routes={componentRoutes} />
   );
 };
 </pre>
+ 
+# Static Deployment (production mode)
 
+Add plugin to webpack.config
+
+<pre>
+new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+    })
+</pre>
+
+Add to build script. -p will minimize js. (Changed ~3.61MB to ~1.43MB)
+
+<pre>
+"build": "NODE_ENV=production npm run clean && webpack -p",
+</pre>
+
+# Surge
+<pre>
+surge -p dist  
+</pre>
+
+# Github pages
+
+<pre>
+git checkout -b gh-pages
+git subtree push --prefix dist origin gh-pages
+</pre>
+
+Script
+
+<pre>
+"deploy": "npm run build && git subtree push --prefix dist origin gh-pages"
+</pre>
+
+# AWS S3
+
+<pre>
+s3-website create webpack-example
+s3-website deploy dist 
+</pre>
+
+# Dynamic Deployment
+
+Architecture involves something like frontend being at app.com and backend being at api.app.com
+
+Alternatively, a node server that serves the application as well as handling business logic. Ideal for smaller apps. However, this is more of a pain with webpack. This is because node becomes the central piece rather than webpack. 
+
+# Integrating node and webpack
+
+In development environment, the node server uses a webpack middleware to pass to the app.
+
+In production environment, we don't want to run webpack at all. We want to build it once and save the generated assets in the dist directory.
+
+Note, this setup is non-ideal because it's better to have a dev and prod env that are more similar.
+
+<pre>
+npm i --save-dev webpack-dev-middleware@1.9.0
+</pre>
+
+server.js
+
+<pre>
+const express = require('express');
+const path = require('path');
+
+const app = express();
+
+// Server routes...
+app.get('/hello', (req, res) => res.send({ hi: 'there' }));
+
+if (process.env.NODE_ENV !== 'production') {
+    const webpackMiddleware = require('webpack-dev-middleware');
+    const webpack = require('webpack');
+    const webpackConfig = require('./webpack.config.js')
+    app.use(webpackMiddleware(webpack(webpackConfig)));
+} else {
+    app.use(express.static('dist'));
+    // For react-router
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, 'dist/index.html'));
+    })
+}
+
+app.listen(process.env.PORT || 3050, () => console.log("Listening."))
+</pre>
+
+# Heroku
+create Procfile (has no extension) and add:
+
+<pre>
+web: node server.js
+</pre>
+
+Then run: 
+
+<pre>
+heroku create
+git remote -v
+git push heroky master
+</pre>
+
+# AWS Elastic Beanstalk
+
+<pre>
+brew install awsebcli
+eb init
+eb open
+</pre>
+
+However process.env.NODE_ENV is not set by aws automatically.
+
+<pre>
+eb setenv NODE_ENV=production
+</pre>
+
+Remember that if a git repo is initialized in the folder, eb deploy will only deploy the most recent commit.
